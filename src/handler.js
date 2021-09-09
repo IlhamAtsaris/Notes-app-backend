@@ -1,22 +1,22 @@
 const { nanoid } = require("nanoid");
 const notes = require("./notes");
 
-const addNoteHandler = (request, h)=>{
-    const {title, tags,body} = request.payload;
-
-    const id = nanoid(16)
-    const createdAt = new Date().toISOString();
-    const updatedAt = createdAt;
-
-    const newNote = {
-        title,tags,body,id,createdAt,updatedAt,
-    }
-
-    notes.push(newNote);
-
-    const isSuccess = notes.filter((note) => note.id === id).length > 0;
-
-    if (isSuccess) {
+    const addNoteHandler = (request, h) => {
+      const { title, tags, body } = request.payload;
+    
+      const id = nanoid(16);
+      const createdAt = new Date().toISOString();
+      const updatedAt = createdAt;
+    
+      const newNote = {
+        title, tags, body, id, createdAt, updatedAt,
+      };
+    
+      notes.push(newNote);
+    
+      const isSuccess = notes.filter((note) => note.id === id).length > 0;
+    
+      if (isSuccess) {
         const response = h.response({
           status: 'success',
           message: 'Catatan berhasil ditambahkan',
@@ -35,44 +35,42 @@ const addNoteHandler = (request, h)=>{
       return response;
     };
 
-
-    const getAllNotesHandler = ()=> ({
-      status : 'success',
+    const getAllNotesHandler = () => ({
+      status: 'success',
       data: {
         notes,
       },
     });
 
-    const getNoteByIdHandler = (request, h)=> {
-      const {id} = request.params;
-
-      const note = notes.filter((n)=> n.id === id)[0];
-
-      if (note !== undefined){
-        return{
+    const getNoteByIdHandler = (request, h) => {
+      const { id } = request.params;
+     
+      const note = notes.filter((n) => n.id === id)[0];
+     
+     if (note !== undefined) {
+        return {
           status: 'success',
-          data :{
+          data: {
             note,
           },
         };
       }
-
       const response = h.response({
-        status : 'fail',
-        message: 'catatan tidak ditemukan ',
-      })
+        status: 'fail',
+        message: 'Catatan tidak ditemukan',
+      });
       response.code(404);
       return response;
-    }
+    };
 
-    const editNoteByIdHandler = (request, h)=>{
-      const {id} = request.params;
-
-      const { title, tags, body} = request.payload;
-      const updatedAt = new Date().toISOString;
-
-      const index = notes.findIndex((note)=> note.id === id);
-      
+    const editNoteByIdHandler = (request, h) => {
+      const { id } = request.params;
+     
+      const { title, tags, body } = request.payload;
+      const updatedAt = new Date().toISOString();
+     
+      const index = notes.findIndex((note) => note.id === id);
+     
       if (index !== -1) {
         notes[index] = {
           ...notes[index],
@@ -81,44 +79,44 @@ const addNoteHandler = (request, h)=>{
           body,
           updatedAt,
         };
-        
+     
         const response = h.response({
           status: 'success',
           message: 'Catatan berhasil diperbarui',
         });
         response.code(200);
         return response;
-      };
-
+      }
+     
       const response = h.response({
         status: 'fail',
         message: 'Gagal memperbarui catatan. Id tidak ditemukan',
       });
       response.code(404);
-      return response;  
-    }
+      return response;
+    };
 
-    const deteleNoteByIdHandler = (request, h)=>{
-      const {id} = request.params;
-      
-      const index = notes.findIndex((note)=> note.id === id);
-
-      if(index !== -1){
-        notes.splice(index,1);
+    const deleteNoteByIdHandler = (request, h) => {
+      const { id } = request.params;
+     
+      const index = notes.findIndex((note) => note.id === id);
+     
+      if (index !== -1) {
+        notes.splice(index, 1);
         const response = h.response({
           status: 'success',
-          message: 'catatan berhasil di hapus'
+          message: 'Catatan berhasil dihapus',
         });
-        response.code(200)
-        return response
+        response.code(200);
+        return response;
       }
-
-      const response = response.h ({
-        status : 'fail',
-        message: 'catatan gagal dihapus. Id tidak ditemukan'
+     
+     const response = h.response({
+        status: 'fail',
+        message: 'Catatan gagal dihapus. Id tidak ditemukan',
       });
       response.code(404);
-      return response
-    }
+      return response;
+    };
     
-module.exports= {addNoteHandler, getAllNotesHandler, getNoteByIdHandler, editNoteByIdHandler, deteleNoteByIdHandler}
+module.exports= {addNoteHandler, getAllNotesHandler, getNoteByIdHandler, editNoteByIdHandler, deleteNoteByIdHandler}
